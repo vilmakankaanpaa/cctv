@@ -11,10 +11,10 @@ if __name__ == "__main__":
   camera.resolution = (640, 480)
   camera.framerate = 24
 
-  filePath = '/home/pi/cctv/'
+  filePath = '/home/pi/cctv/recordings/'
 
-  camera.start_recording(filePath + '{}' + '.h264'.format(
-    dt.datetime.now().strftime('%m-%d_%H:%M:%S')))
+  camera.start_recording(filePath + dt.datetime.now().strftime(
+    '%m-%d_%H:%M:%S') + '.h264')
   camera.wait_recording(30) # 30 seconds
 
   start = dt.datetime.now()
