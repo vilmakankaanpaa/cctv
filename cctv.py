@@ -1,8 +1,12 @@
 # -*- coding: utf-8 -*-
 #!/usr/bin/env python3
 
+import sys
 import datetime as dt
+import time
 import picamera
+
+sys.excepthook = sys.__excepthook__
 
 if __name__ == "__main__":
 
@@ -13,30 +17,37 @@ if __name__ == "__main__":
 
   filePath = '/home/pi/cctv/recordings/'
 
-  camera.start_recording(filePath + dt.datetime.now().strftime(
-    '%m-%d_%H:%M:%S') + '.h264')
-  camera.wait_recording(30) # 30 seconds
+  try:
 
-  start = dt.datetime.now()
-  while (dt.datetime.now() - start).seconds < 30:
-    camera.split_recording(filePath + '{}' + '.h264'.format(
-    dt.datetime.now().strftime('%m-%d_%H:%M:%S')))
-    camera.wait_recording(5)
-  camera.stop_recording()
-  
+    while True:
 
-  #start = dt.datetime.now()
-  #while (dt.datetime.now() - start).seconds < 30:
-  #    camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-  #    camera.wait_recording(0.2)
-  # camera.stop_recording()
+      if (dt.datetime.now().hour > 6 and dt.datetime.now().hour < 18):
+        # start when after 6 AM
 
+        print('Time is {}, starting to record.'.format(dt.datetime.now()))
+        camera.start_recording(filePath + dt.datetime.now().strftime(
+        '%m-%d_%H-%M') + '.h264')
+        camera.wait_recording(60*60)
 
-    #while(datetime.now().hour < 18 or datetime.now().hour >6):
+        # Keep recording in hour interwals until evening
+        while (dt.datetime.now().hour > 6 and dt.datetime.now().hour < 18):
+          print('Splitting recording, time now {}.'.format(dt.datetime.now()))
+          camera.split_recording(filePath + dt.datetime.now().strftime(
+          '%m-%d_%H-%M') + '.h264')
+          camera.wait_recording(60*60)
+        
+        camera.stop_recording()
+      else:
+        # sleep when after 6PM and before 6AM
+        print('Time is {}, going to sleep for an hour.'.format(dt.datetime.now()))
+        time.sleep(60*60)
+    
+  except KeyboardInterrupt:
+    print('Exiting: KeyboardInterrupt')
 
-    # if camera.is_recording:
-    #     # turn of recording 
-    #     camera.stop_recording()
-
-    # print('Time is {}, going to sleep for an hour.'.format(datetime.now().hour))
-    # sleep(60*60)
+  finally:
+    try:
+      camera.stop_recording()
+      camera.close()
+    except:
+      pass
