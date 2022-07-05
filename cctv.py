@@ -15,7 +15,8 @@ if __name__ == "__main__":
   camera.resolution = (640, 480)
   camera.framerate = 15
 
-  filePath = '/home/pi/cctv/recordings/'
+  filePath = '/media/pi/8F57-C519/camera-records/'
+  
 
   try:
 
