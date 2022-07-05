@@ -13,7 +13,7 @@ if __name__ == "__main__":
   print('Starting up CCTV')
   camera = picamera.PiCamera()
   camera.resolution = (640, 480)
-  camera.framerate = 24
+  camera.framerate = 15
 
   filePath = '/home/pi/cctv/recordings/'
 
@@ -47,7 +47,8 @@ if __name__ == "__main__":
 
   finally:
     try:
+      print('Stopping camera')
       camera.stop_recording()
       camera.close()
     except:
-      pass
+      print('Camera already stopped')
