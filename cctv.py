@@ -2,6 +2,7 @@
 #!/usr/bin/env python3
 
 import sys
+import os
 import datetime as dt
 import time
 import picamera
@@ -16,7 +17,14 @@ if __name__ == "__main__":
   camera.framerate = 15
 
   filePath = '/media/pi/8F57-C519/camera-records/'
-  
+  start = dt.datetime.now()
+
+  while not os.path.isdir(filePath):
+    print('Usb not found yet, sleeping')
+    time.sleep(10)
+    if (dt.datetime.now()-start).total_seconds() > 180:
+      print('USB still not found after 3 minutes, exiting')
+      exit(0)
 
   try:
 
