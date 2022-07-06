@@ -6,12 +6,27 @@ import os
 import datetime as dt
 import time
 import picamera
+import csv
 
 sys.excepthook = sys.__excepthook__
 
+def printlog(content):
+
+    timestamp = dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    data = [[timestamp, content]]
+
+    with open('output.txt', 'a', newline='') as logfile:
+        logwriter = csv.writer(logfile, delimiter=',')
+        for row in data:
+            logwriter.writerow(row)
+
+    # print to shell too
+    print(timestamp,content)
+    
+
 if __name__ == "__main__":
 
-  print('Starting up CCTV')
+  printlog('Starting up CCTV')
   camera = picamera.PiCamera()
   camera.resolution = (640, 480)
   camera.framerate = 15
@@ -20,7 +35,7 @@ if __name__ == "__main__":
   start = dt.datetime.now()
 
   while not os.path.isdir(filePath):
-    print('Usb not found yet, sleeping')
+    printlog('Usb not found yet, sleeping')
     time.sleep(10)
     if (dt.datetime.now()-start).total_seconds() > 180:
       print('USB still not found after 3 minutes, exiting')
@@ -33,14 +48,14 @@ if __name__ == "__main__":
       if (dt.datetime.now().hour > 6 and dt.datetime.now().hour < 18):
         # start when after 6 AM
 
-        print('Time is {}, starting to record.'.format(dt.datetime.now()))
+        printlog('Time is {}, starting to record.'.format(dt.datetime.now()))
         camera.start_recording(filePath + dt.datetime.now().strftime(
         '%m-%d_%H-%M') + '.h264')
         camera.wait_recording(60*60)
 
         # Keep recording in hour interwals until evening
         while (dt.datetime.now().hour > 6 and dt.datetime.now().hour < 18):
-          print('Splitting recording, time now {}.'.format(dt.datetime.now()))
+          printlog('Splitting recording, time now {}.'.format(dt.datetime.now()))
           camera.split_recording(filePath + dt.datetime.now().strftime(
           '%m-%d_%H-%M') + '.h264')
           camera.wait_recording(60*60)
@@ -48,16 +63,16 @@ if __name__ == "__main__":
         camera.stop_recording()
       else:
         # sleep when after 6PM and before 6AM
-        print('Time is {}, going to sleep for an hour.'.format(dt.datetime.now()))
+        printlog('Time is {}, going to sleep for an hour.'.format(dt.datetime.now()))
         time.sleep(60*60)
     
   except KeyboardInterrupt:
-    print('Exiting: KeyboardInterrupt')
+    printlog('Exiting: KeyboardInterrupt')
 
   finally:
     try:
-      print('Stopping camera')
+      printlog('Stopping camera')
       camera.stop_recording()
       camera.close()
     except:
-      print('Camera already stopped')
+      printlog('Camera already stopped')

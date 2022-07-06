@@ -3,5 +3,5 @@
 
 cd /
 cd home/pi/cctv
-sudo python cctv.py >> output.txt
+/usr/bin/python3 cctv.py
 cd /
