@@ -38,33 +38,34 @@ if __name__ == "__main__":
     printlog('Usb not found yet, sleeping')
     time.sleep(10)
     if (dt.datetime.now()-start).total_seconds() > 180:
-      print('USB still not found after 3 minutes, exiting')
+      printlog('USB still not found after 3 minutes, exiting')
       exit(0)
 
   try:
 
     while True:
 
-      if (dt.datetime.now().hour > 6 and dt.datetime.now().hour < 18):
+      #if (dt.datetime.now().hour > 6 and dt.datetime.now().hour < 18):
         # start when after 6 AM
 
-        printlog('Time is {}, starting to record.'.format(dt.datetime.now()))
-        camera.start_recording(filePath + dt.datetime.now().strftime(
+      printlog('Time is {}, starting to record.'.format(dt.datetime.now()))
+      camera.start_recording(filePath + dt.datetime.now().strftime(
+      '%m-%d_%H-%M') + '.h264')
+      camera.wait_recording(60*60)
+
+      # Keep recording in hour interwals until evening
+      #while (dt.datetime.now().hour > 6 and dt.datetime.now().hour < 18):
+      while (True):
+        printlog('Splitting recording, time now {}.'.format(dt.datetime.now()))
+        camera.split_recording(filePath + dt.datetime.now().strftime(
         '%m-%d_%H-%M') + '.h264')
         camera.wait_recording(60*60)
-
-        # Keep recording in hour interwals until evening
-        while (dt.datetime.now().hour > 6 and dt.datetime.now().hour < 18):
-          printlog('Splitting recording, time now {}.'.format(dt.datetime.now()))
-          camera.split_recording(filePath + dt.datetime.now().strftime(
-          '%m-%d_%H-%M') + '.h264')
-          camera.wait_recording(60*60)
-        
-        camera.stop_recording()
-      else:
+      
+      camera.stop_recording()
+      #else:
         # sleep when after 6PM and before 6AM
-        printlog('Time is {}, going to sleep for an hour.'.format(dt.datetime.now()))
-        time.sleep(60*60)
+        #printlog('Time is {}, going to sleep for an hour.'.format(dt.datetime.now()))
+        #time.sleep(60*60)
     
   except KeyboardInterrupt:
     printlog('Exiting: KeyboardInterrupt')
