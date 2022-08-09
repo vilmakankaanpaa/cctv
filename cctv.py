@@ -54,13 +54,14 @@ if __name__ == "__main__":
         camera.wait_recording(60*60)
 
         # Keep recording in hour interwals until evening
-        #while (dt.datetime.now().hour > 6 and dt.datetime.now().hour < 18):
-        while (True):
+        while (dt.datetime.now().hour > 6 and dt.datetime.now().hour < 18):
           printlog('Splitting recording, time now {}.'.format(dt.datetime.now()))
           camera.split_recording(filePath + dt.datetime.now().strftime(
           '%m-%d_%H-%M') + '.h264')
           camera.wait_recording(60*60)
-      
+
+        camera.stop_recording()        
+
       else:
         # sleep when after 6PM and before 6AM
         printlog('Time is {}, going to sleep for an hour.'.format(dt.datetime.now()))
